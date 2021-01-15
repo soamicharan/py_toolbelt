@@ -251,3 +251,242 @@ Execute function using elements of list.
 4
 5
 ```
+
+## Dict
+### filter(`condition`, `**kwargs`)
+Filter dict based on keys and values.
+**Arguments**
+* __condition__ - `function`, `function` must accept 2 parameters, 1st parameter for key and 2nd parameter for value. (_required_)
+
+**Example**
+```python
+>>> dict_obj = {'a': 1, 'b': 2, 'c': 3}
+>>> dict_obj.filter(lambda key, value: value > 1)
+{'b': 2, 'c': 3}
+```
+
+### transform(`key_function=None`, `value_function=None`)
+Transform dict keys and values according to given functions.
+**Arguments**
+* __key_function__ - `function`, `function` can accept any number of arguments. (_optional_, _default: `None`_)
+* __value_function__ - `function`, `function` can accept any number of arguments. (_optional_, _default: `None`_)
+
+**Example**
+```python
+>>> dict_obj = {'a': 1, 'b': 2, 'c': 3}
+>>> dict_obj.transform(key_function=lambda x: 'a' + x)
+{'aa': 1, 'ab': 2, 'ac': 3}
+
+>>> dict_obj.transform(value_function=lambda x: x ** 2)
+{'a': 1, 'b': 4, 'c': 9}
+
+>>> dict_obj = {'a': (1, 2), 'b': (3, 4), 'c': (5, 6)}
+>>> dict_obj.transform(key_function=lambda key: key + '_sum', value_function=lambda x, y: x + y)
+{'a_sum': 3, 'b_sum': 7, 'c_sum': 11}
+```
+
+### keys_list()
+Return keys of dict as list.
+
+**Example**
+```python
+>>> dict_obj = {'a': 1, 'b': 2, 'c': 3}
+>>> dict_obj.keys_list()
+['a', 'b', 'c']
+```
+
+### values_list()
+Return values of dict as list.
+
+**Example**
+```python
+>>> dict_obj = {'a': 1, 'b': 2, 'c': 3}
+>>> dict_obj.values_list()
+[1, 2, 3]
+```
+
+### remove(`key_function=None`, `value_function=None`, `operator='and'`)
+Remove dict keys based on given `key_function` and `value_fucntion` and operation between `key_funciton` and `value_function` which is by default `and` operation.
+**Arguments**
+* __key_function__ - `function`, `function` can accept any number of arguments. (_optional_, _default: `None`_)
+* __value_function__ - `function`, `function` can accept any number of arguments. (_optional_, _default: `None`_)
+* __operator__ - `str`, accepted string - ['and', 'or'], (_optional_, _default='and'_)
+
+**Example**
+```python
+>>> dict_obj = {'a': 1, 'b': 2, 'c': 3}
+>>> dict_obj.remove(key_function=lambda x: x == 'b')
+{'a': 1, 'c': 3}
+
+>>> dict_object.remove(key_function=lambda key: key in ['b', 'c'], value_fucntion=lambda value: value % 2 == 1)
+{'a': 1, 'b': 2}
+
+>>> dict_object.remove(key_function=lambda key: key in ['b', 'c'], value_fucntion=lambda value: value % 2 == 1, operator='or')
+{'a': 1}
+```
+
+### reverse(`keep_duplicate=False`)
+Reverse the dict, set values as keys and keys as values. If `keep_duplicate` is set true then it will merge duplicate value as list.<br>
+_**note -** dict values should be hashable datatype i.e elements must be str, int, float, tuple, bool only._
+
+**Arguments**
+* __keep_duplicate__ - `bool`, (_optional_, _default: `False`_)
+
+**Example**
+```python
+>>> dict_obj = {'a': 1, 'b': 2, 'c': 3, 'd': 3}
+>>> dict_obj.reverse()
+{1: 'a', 2: 'b', 3: 'd'}
+
+>>> dict_obj.reverse(keep_duplicate=True)
+{1: 'a', 2: 'b', 3: ['c', 'd']}
+```
+
+### deep_merge(`target_dict`, `max_depth=None`)
+It will merge given `target_dict` with given `max_depth`. If `max_depth` is `None` then it go down to maximum depth for merging.
+**Arguments**
+* __target_dict__ - `dict`, (_required_)
+* __max_depth__ - `int`, `int` greater than 0, (_optional_, _default: `None`_)
+
+**Example**
+```python
+>>> dict_obj = {'a': 1, 'b': {'c': {'d': 3}, 'e': 2}}
+>>> dict_obj.deep_merge({'g': 4, 'b': {'c': {'d': 5}}})
+{'a': 1, 'b': {'c': {'d': [3, 5]}, 'e': 2}, 'g': 4}
+
+>>> dict_obj.deep_merge({'g': 4, 'b': {'c': {'d': 5}}}, max_depth=1)
+{'a': 1, 'b': [{'c': {'d': 3}, 'e': 2}, {'c': {'d': 5}}], 'g': 4}
+```
+
+## Set
+### to_list()
+Convert set to list.
+
+## Tuple
+### to_list()
+Convert tuple to list.
+
+## Int & Float
+### is_positive(`**kwargs`)
+Return `True` if number is positive else return `False`. If `on_true` or `on_false` keyword arguments are present then it will return keyword argument value respectively.
+
+**Keyword arguments**
+* __on_true__ - any data type, (_optional_, _default: `True`_)
+* __on_false__ - any data type, (_optional_, _default: `False`_)
+
+**Example**
+```python
+>>> num = 1
+>>> num.is_positive()
+True
+>>> num.is_positive(on_true='Yes')
+Yes
+>>> num = -9
+>>> num.is_positive(on_false='No')
+No
+>>> num.is_positive(on_true='Yes')
+False
+```
+
+### is_negetive(`**kwargs`)
+Return `True` if number is negetive else return `False`. If `on_true` or `on_false` keyword arguments are present then it will return keyword argument value respectively.
+
+**Keyword arguments**
+* __on_true__ - any data type, (_optional_, _default: `True`_)
+* __on_false__ - any data type, (_optional_, _default: `False`_)
+
+**Example**
+```python
+>>> num = 1
+>>> num.is_negetive()
+False
+>>> num.is_negetive(on_true='Yes')
+False
+>>> num = -9
+>>> num.is_negetive(on_false='No')
+True
+>>> num.is_negetive(on_true='Yes', on_false='No')
+Yes
+```
+
+### is_zero(`**kwargs`)
+Return `True` if number is equal to zero else return `False`. If `on_true` or `on_false` keyword arguments are present then it will return keyword argument value respectively.
+
+**Keyword arguments**
+* __on_true__ - any data type, (_optional_, _default: `True`_)
+* __on_false__ - any data type, (_optional_, _default: `False`_)
+
+**Example**
+```python
+>>> num = 1
+>>> num.is_zero()
+False
+>>> num.is_zero(on_true='Yes')
+False
+>>> num = 0
+>>> num.is_zero(on_false='No')
+True
+>>> num.is_zero(on_true='Yes', on_false='No')
+Yes
+```
+
+### safe_divide(`denominator`, `default=math.nan`)
+It ensure if `denominator` is zero then return `default` value otherwise return divided value.
+**Arguments**
+* __denominator__ - `int` / `float`, (_required_)
+* __default__ - any data type, (_optional_, _default: `math.nan`_)
+
+**Example**
+```python
+>>> a = 4
+>>> a.safe_divide(2)
+2.0
+>>> a.safe_divide(0)
+nan
+>>> a.safe_divide(0, 0)
+0
+>>> a.safe_divde(0, 'N/A')
+N/A
+```
+
+## Others
+This is common to all data types -
+### is_none()
+Return `True` if object is `None` else return `False`. If `on_true` or `on_false` keyword arguments are present then it will return keyword argument value respectively.
+
+**Keyword arguments**
+* __on_true__ - any data type, (_optional_, _default: `True`_)
+* __on_false__ - any data type, (_optional_, _default: `False`_)
+
+**Example**
+```python
+>>> a, b, c, d = 2, 'hello', [], None
+>>> a.is_none()
+False
+>>> a.is_none(on_false=a + 1)
+3
+>>> b.is_none(on_true="Yes")
+False
+>>> d.is_none()
+True
+```
+
+### is_not_none()
+Return `True` if object is not `None` else return `False`. If `on_true` or `on_false` keyword arguments are present then it will return keyword argument value respectively.
+
+**Keyword arguments**
+* __on_true__ - any data type, (_optional_, _default: `True`_)
+* __on_false__ - any data type, (_optional_, _default: `False`_)
+
+**Example**
+```python
+>>> a, b, c, d = 2, 'hello', [], None
+>>> a.is_not_none()
+True
+>>> a.is_not_none(on_false=a + 1)
+True
+>>> b.is_not_none(on_true="Yes")
+Yes
+>>> d.is_not_none()
+False
+```

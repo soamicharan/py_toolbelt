@@ -23,39 +23,35 @@ def __apply_condition(self, **kwargs):
     return self
 
 
-def transform(self, key_function=None, value_function=None, **kwargs):
+def transform(self, key_function=None, value_function=None):
     key_function = key_function if key_function is not None else lambda element: element
     value_function = value_function if value_function is not None else lambda element: element
     __get_args(key_function)
     __get_args(value_function)
-    return __apply_condition({
-        __apply_function(key_function, key): __apply_function(value_function, value) \
-        for key, value in self.items()
-    }, **kwargs)
+    return {__apply_function(key_function, key): __apply_function(value_function, value) \
+            for key, value in self.items()}
 
-def keys_list(self, **kwargs):
-    return [*__apply_condition(self, **kwargs)]
+def keys_list(self):
+    return [*self]
 
-def values_list(self, **kwargs):
-    return [*__apply_condition(self, **kwargs).values()]
+def values_list(self):
+    return [*self.values()]
 
-def filter(self, **kwargs):
-    return __apply_condition(self, **kwargs)
+def filter(self, condition):
+    return __apply_condition(self, condition=condition)
 
-def remove(self, key_function=None, value_function=None, operator='and', **kwargs):
+def remove(self, key_function=None, value_function=None, operator='and'):
     operator = operator.and_ if operator == 'and' else operator.or_
     key_function = key_function if key_function is not None else lambda element: True
     value_function = value_function if value_function is not None else lambda element: True
     __get_args(key_function)
     __get_args(value_function)
-    return __apply_condition({
-        key: value for key, value in self \
-        if operator(__apply_function(key_function, key), __apply_function(value_function, value))
-    }, **kwargs)
+    return {key: value for key, value in self \
+            if operator(__apply_function(key_function, key), __apply_function(value_function, value))}
 
-def reverse(self, keep_duplicate=False, **kwargs):
+def reverse(self, keep_duplicate=False):
     if not keep_duplicate:
-        return __apply_condition({value: key for key, value in self.items()}, **kwargs)
+        return {value: key for key, value in self.items()}
     else:
         reverse_dict, duplicate_value = {}, []
         for key, value in self.items():
@@ -67,10 +63,9 @@ def reverse(self, keep_duplicate=False, **kwargs):
             else:
                 reverse_dict[value] = key
 
-        return __apply_condition(reverse_dict, **kwargs)
+        return reverse_dict
 
-def deep_merge(self, target_dict, max_depth=None, **kwargs):
-    depth = kwargs.get('depth', 1)
+def deep_merge(self, target_dict, max_depth=None, depth=1):
     merged_dict = self.copy()
     for key, value in target_dict.items():
         if key in merged_dict:
@@ -78,12 +73,10 @@ def deep_merge(self, target_dict, max_depth=None, **kwargs):
                 if max_depth is not None and max_depth == depth:
                     merged_dict[key] = [merged_dict[key], value]
                 else:
-                    merged_dict[key] = deep_merge(merged_dict[key], value, max_depth=max_depth, depth=depth+1)
+                    merged_dict[key] = deep_merge(merged_dict[key], value, max_depth, depth + 1)
             else:
                 merged_dict[key] = [merged_dict[key], value]
         else:
             merged_dict[key] = value
-    if kwargs.get('condition'):
-        return __apply_condition(merged_dict, **kwargs)
-    else:
-        return merged_dict
+
+    return merged_dict
