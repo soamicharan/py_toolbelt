@@ -7,119 +7,106 @@ def __is_type(obj, target_obj):
     return False
 
 def __apply_function(function, parameter):
-    if function.__dict__.get('args_length', 1) == 1:
+    if function.__dict__.get('__args_length__', 1) == 1:
         return function(parameter)
     else:
         return function(*parameter)
 
 def __get_args(function):
     if function is not None:
-        function.__dict__['args_length'] = len(inspect.getargspec(function).args)
+        function.__dict__['__args_length__'] = len(inspect.getargspec(function).args)
 
-def __evaluate_condition(condition, element, negetive=False):
-    if condition is None: return not negetive
-    return negetive ^ __apply_function(condition, element)
+def __evaluate_condition(condition, element, inverse=False):
+    if condition is None: return not inverse
+    return inverse ^ __apply_function(condition, element)
 
-def __apply_condition_cast(list_object, negetive=False, **kwargs):
+def __apply_condition_cast(self, **kwargs):
     __get_args(kwargs.get('condition'))
     if kwargs.get('condition') or not kwargs.get('cast'):
         return [kwargs.get('cast')(element) if kwargs.get('cast') else element \
-                for element in list_object \
-                if __evaluate_condition(kwargs.get('condition'), element, negetive)]
+                for element in self \
+                if __evaluate_condition(kwargs.get('condition'), element, kwargs.get('inverse', False))]
     else:
-        return list_object
+        return self
 
 
 
-def unique(list_object, **kwargs):
-    return [*{*__apply_condition_cast(list_object, **kwargs)}]
+def unique(self):
+    return [*{*self}]
 
-def to_set(list_object, **kwargs):
-    return {*__apply_condition_cast(list_object, **kwargs)}
+def to_set(self):
+    return {*self}
 
-def to_tuple(list_object, **kwargs):
-    return (*__apply_condition_cast(list_object, **kwargs), )
+def to_tuple(self):
+    return (*self, )
 
-def to_dict(list_object, key_function, value_function, **kwargs):
+def to_dict(self, key_function, value_function):
     __get_args(key_function)
     __get_args(value_function)
-    return {__apply_function(key_function, element): __apply_function(value_function, element) \
-            for element in __apply_condition_cast(list_object, **kwargs)}
+    return {__apply_function(key_function, element): __apply_function(value_function, element) for element in self}
 
-def remove_index(list_object, index=[], **kwargs):
+def remove_index(self, index=[], **kwargs):
     if index == [] and not kwargs.get('condition'):
-        return list_object
+        return self
     elif isinstance(index, int):
         index = [index]
 
     conditional_index = __apply_condition_cast(
-        [*range(len(list_object))], condition=kwargs.get('condition')
+        [*range(len(self))], condition=kwargs.get('condition')
     ) if kwargs.get('condition') else []
     return __apply_condition_cast(
-        [element for index_value, element in enumerate(list_object) \
+        [element for index_value, element in enumerate(self) \
          if index_value not in index + conditional_index],
         cast=kwargs.get('cast')
     )
 
-def remove_values(list_object, values=[], **kwargs):
+def remove_values(self, values=[], **kwargs):
     if values == [] and not kwargs.get('condition'):
-        return list_object
+        return self
     elif values == [] and kwargs.get('condition'):
-        return __apply_condition_cast(list_object, negetive=True, **kwargs)
+        return __apply_condition_cast(self, inverse=True, **kwargs)
 
     return __apply_condition_cast(
-        [element for element in list_object if element not in values], negetive=True, **kwargs
+        [element for element in self if element not in values], inverse=True, **kwargs
     )
 
-def filter(list_object, condition, **kwargs):
-    return __apply_condition_cast(list_object, condition=condition, cast=kwargs.get('cast'))
+def filter(self, condition, **kwargs):
+    return __apply_condition_cast(self, condition=condition, cast=kwargs.get('cast'))
 
-def compact(list_object):
+def compact(self):
     compact_condition = lambda element: element is not None or (__is_type(element, 'iterable') and any(element))
-    return __apply_condition_cast(list_object, condition=compact_condition)
+    return __apply_condition_cast(self, condition=compact_condition)
 
-def transform(list_object, value, **kwargs):
-    return __apply_condition_cast(
-        [__apply_function(value, element) for element in list_object], **kwargs
-    )
+def transform(self, element_function):
+    return [__apply_function(element_function, element) for element in self]
 
-def count_all(list_object, **kwargs):
-    return {**collections.Counter(__apply_condition_cast(list_object, **kwargs))}
+def count_all(self):
+    return {**collections.Counter(self)}
 
-def window_enumerate(list_object, length, increment=1, pad=None):
-    window_list, list_length = [], len(list_object)
-    for index in range(0, list_length, increment):
-        if (index + length) > list_length:
-            break
-        window_list.append(list_object[index:index + length])
+def intersection(self, target_object):
+    return [*({*self}.intersection({*target_object}))]
 
-    if (index + 1) < list_length:
-        window_list.append(list_object[index:] + [pad for _ in range(length - (list_length - index))])
-
-    return window_list
-
-def intersection(list_object, target_object):
-    return [*({*list_object}.intersection({*target_object}))]
-
-def flat_list(list_object):
+def flatten(self):
     flatten_list = []
-    for element in list_object:
+    for element in self:
         if isinstance(element, list):
-            flatten_list.extend(flat_list(element))
+            flatten_list.extend(flatten(element))
+        elif isinstance(element, tuple) or isinstance(element, set):
+            flatten_list.extend(flatten([*element]))
         else:
             flatten_list.append(element)
 
     return flatten_list
 
-def get_index(list_object, index, default_value=None):
+def get_index(self, index, default_value=None):
     try:
-        return list_object[index]
+        return self[index]
     except IndexError:
         return default_value
 
-def execute(list_object, execute_function, **kwargs):
+def execute(self, execute_function):
     __get_args(execute_function)
-    for element in __apply_condition_cast(list_object, condition=kwargs.get('condition')):
+    for element in self:
         __apply_function(execute_function, element)
 
-    return list_object
+    return self
