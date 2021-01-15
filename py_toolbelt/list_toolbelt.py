@@ -78,6 +78,7 @@ def compact(self):
     return __apply_condition_cast(self, condition=compact_condition)
 
 def transform(self, element_function):
+    __get_args(element_function)
     return [__apply_function(element_function, element) for element in self]
 
 def count_all(self):

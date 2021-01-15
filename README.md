@@ -358,6 +358,26 @@ It will merge given `target_dict` with given `max_depth`. If `max_depth` is `Non
 {'a': 1, 'b': [{'c': {'d': 3}, 'e': 2}, {'c': {'d': 5}}], 'g': 4}
 ```
 
+### execute(`execute_function`)
+Execute function using keys and values of dict.
+
+**Arguments**
+* __execute_function__ - `function`, it must accept 2 arguments key and value, (_required_)
+
+**Example**
+```python
+>>> dict_obj = {'a': 1, 'b': 2, 'c': 3}
+>>> new_list = []
+>>> dict_obj.execute(lambda x, y: new_list.append(y))
+>>> new_list
+[1, 2, 3]
+
+>>> dict_obj.execute(lambda x, y: print(x))
+1
+2
+3
+```
+
 ## Set
 ### to_list()
 Convert set to list.

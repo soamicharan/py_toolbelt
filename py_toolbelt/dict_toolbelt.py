@@ -1,4 +1,4 @@
-import operator
+import operator, inspect
 
 def __apply_function(function, parameter):
     if function.__dict__.get('__args_length__', 1) == 1:
@@ -60,6 +60,7 @@ def reverse(self, keep_duplicate=False):
                     reverse_dict[value].append(key)
                 else:
                     reverse_dict[value] = [reverse_dict[value], key]
+                    duplicate_value.append(value)
             else:
                 reverse_dict[value] = key
 
@@ -80,3 +81,9 @@ def deep_merge(self, target_dict, max_depth=None, depth=1):
             merged_dict[key] = value
 
     return merged_dict
+
+def execute(self, execute_function):
+    for key, value in self.items():
+        execute_function(key, value)
+
+    return self
