@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.1.0'
+VERSION = '0.2.0'
 DESCRIPTION = 'PyToolBelt - Extend your built-in methods.'
-LONG_DESCRIPTION = ''
+LONG_DESCRIPTION = open('README.md', 'r').read()
 
 # Setting up
 setup(
@@ -13,6 +13,7 @@ setup(
         author_email="charansoami@gmail.com",
         description=DESCRIPTION,
         long_description=LONG_DESCRIPTION,
+        long_description_content_type='text/markdown',
         packages=find_packages(),
         install_requires=['forbiddenfruit'],
         keywords=['python', 'PyToolBelt'],
