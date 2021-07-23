@@ -471,7 +471,7 @@ N/A
 
 ## Others
 This is common to all data types -
-### is_none()
+### is_none(`**kwargs`)
 Return `True` if object is `None` else return `False`. If `on_true` or `on_false` keyword arguments are present then it will return keyword argument value respectively.
 
 **Keyword arguments**
@@ -491,7 +491,7 @@ False
 True
 ```
 
-### is_not_none()
+### is_not_none(`**kwargs`)
 Return `True` if object is not `None` else return `False`. If `on_true` or `on_false` keyword arguments are present then it will return keyword argument value respectively.
 
 **Keyword arguments**
@@ -509,6 +509,149 @@ True
 Yes
 >>> d.is_not_none()
 False
+```
+
+## Functions toolbelt
+
+### is_type(`obj`, `target_obj`)
+Return `True` if object matches with given types else return `False`.
+
+**Arguments**
+* __obj__ - any data type / object
+* __target_obj__ - string or list of string
+
+**Example**
+```python
+>>> a, b, c = 2, 'hello', ['world']
+>>> is_type(a, 'int')
+True
+>>> is_type(b, 'int')
+False
+>>> is_type(c, ['list', 'set'])
+True
+>>> is_type(a, ['str', 'list'])
+False
+```
+
+### handle_division(`numerator`, `denominator`, `default=0`)
+Return division value if `denominator` is not zero otherwise return `default` value.
+
+**Arguments**
+* __numerator__ - int / float
+* __denominator__ - int / float
+* __default__ - int / float, (_optional_, _default: `0`_)
+
+**Example**
+```python
+>>> handle_division(1, 2)
+0.5
+>>> handle_division(1.5, None)
+0
+>>> handle_division(2, 0, 2)
+2
+>>> handle_division(2, 0)
+0
+```
+
+### multithread_pool(`funcs`, `max_threads=5`)
+This method execute given ``funcs`` dict of functions in multi-thread. Each thread execute one function.
+
+**Arguments**
+* __funcs__ - dict
+* __max_threads__ - int, (_optional_, _default: `5`_)
+
+**Example**
+`funcs` argument dict keys are function and value is either list of length 2 or ``None``.
+List 1st element should be list of positional arguments.
+List 2nd element should be dict of keyword arguments.
+If key is ``None`` then it means function do not take any positional arguments and keyword
+arguments.
+Structure -
+```python
+{test_func1: [[1, 2, 'Hello', [1,2,333]], {'arg_key': 12}],
+ test_func2: [[1, 2, 'Hello', [1,2,333]],
+ test_func3: [None, {'arg_key': 123}],}
+ test_func: None}
+ ```
+
+ ### cache_db(`key`, `value=None`)
+This function use to implement temporary small pickle database which is a json storing file.
+This is not persistant database so it will be cleared out if you deploy new code / delete the pickle file.
+So make sure to use in such cases where you need data to store for temporary purpose.
+This function accept two parameters, first is `key` and second is `value`.
+If only `key` parameter is provided then it will get data from database, if `key` not found return ``False``, otherwise return key's value.
+If you pass both `key` and `value` parameters then it will set key value in database.
+
+**Arguments**
+* __key__ - str
+* __value__ - any basic datatype accepted by json format, (_optional_, _default: `None`_)
+
+**Example**
+```python
+>>> cache_db(key='hello')
+False
+>>> cache_db(key='hello', value='world')
+True
+>>> cache_db(key='hello')
+World
+```
+### none_safe(`object`, `default=None`)
+If given `object` is not `None` then return object otherwise return `default` value.
+
+**Arguments**
+* __object__ - any data type / object
+* __default__ - any data type / object, (_optional_, _default: `None`_)
+
+**Example**
+```python
+>>> none_safe(5)
+5
+>>> none_safe('hello', 'world')
+hello
+>>> none_safe(None, 'world')
+world
+```
+
+### iter_safe(`object`, `default=[]`)
+If given `object` is not `None` and object is instance of iterable then return object otherwise return `default` value.
+
+**Arguments**
+* __object__ - any data type / object
+* __default__ - any data type / object, (_optional_, _default: `[]`_)
+
+**Example**
+```python
+>>> iter_safe(5)
+[]
+>>> iter_safe(['hello'], 'world')
+['hello']
+>>> iter_safe([], 'world')
+[]
+>>> iter_safe('hello')
+'hello'
+>>> iter_safe(1.4, ['hello', 'world'])
+['hello', 'world']
+```
+
+### empty_safe(`object`, `default=None`)
+If given `object` is empty in sense of iterable then return `default` value else return `object`.
+
+**Arguments**
+* __object__ - any data type / object
+* __default__ - any data type / object, (_optional_, _default: `None`_)
+
+**Example**
+```python
+>>> empty_safe(5)
+5
+>>> empty_safe(['hello'], 'world')
+['hello']
+>>> empty_safe([], 'world')
+'world'
+>>> empty_safe('hello')
+'hello'
+>>> empty_safe(1.4, ['hello', 'world'])
+1.4
 ```
 
 # MIT License

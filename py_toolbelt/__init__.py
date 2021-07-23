@@ -6,6 +6,9 @@ import py_toolbelt.float_toolbelt as ftb
 import py_toolbelt.set_toolbelt as stb
 import py_toolbelt.tuple_toolbelt as ttb
 from forbiddenfruit import curse, reverse
+from py_toolbelt.functions_toolbelt import (
+    is_type, handle_division, multithread_pool, cache_db, none_safe, iter_safe, empty_safe
+)
 import inspect
 
 DATA_TYPE_MODULE_MAP = {list: ltb, dict: dtb, int: itb, float: ftb, set: stb, tuple: ttb}

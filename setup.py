@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.2.3'
+VERSION = '0.2.4'
 DESCRIPTION = 'PyToolBelt - Extend your built-in methods.'
 LONG_DESCRIPTION = open('README.md', 'r').read()
 
@@ -16,7 +16,7 @@ setup(
         long_description_content_type='text/markdown',
         license='MIT',
         packages=find_packages(),
-        install_requires=['forbiddenfruit'],
+        install_requires=['forbiddenfruit', 'jsondatabase', 'future'],
         keywords=['python', 'PyToolBelt'],
         classifiers= [
             "Development Status :: 3 - Alpha",
