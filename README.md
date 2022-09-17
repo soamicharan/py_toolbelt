@@ -510,6 +510,40 @@ Yes
 >>> d.is_not_none()
 False
 ```
+### _s
+`_s` attribute is use to access any object attribute safely access.
+`_s(*args, *kwargs)` to safely call a method on the object
+You can use as None-aware operation.
+
+**Example**
+```python
+class Aclass:
+  def __init__(self):
+    self.a, self.b_ = 1, 2
+
+>>> obj = Aclass()
+>>> obj.a  # Attribute `a` exists in object
+1
+>>> obj.hello  # Attribute `hello` does not exists
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'Aclass' object has no attribute 'hello'
+
+>>> obj._s.hello   # Accessing a non-existing attribute via `_s` attribute. It will return None
+
+>>> obj._s.hello._s.world._s.chain_whatever  # Consecutive chaining also evaluate None
+>>> obj._s.a  # Attribute `a` exist so it will return its value.
+1
+>>> str_value = 'hello'
+>>> str_value.find('e')  # find method exists on string object.
+1
+>>> str_value.find_new('e')  # find_new method does not exists so it will raise error
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'str' object has no attribute 'find_new'
+
+>>> str_value.find_new._s('e')  # Using _s(*args, **kwarg) to safely call the method and it will return None.
+```
 
 ## Functions toolbelt
 

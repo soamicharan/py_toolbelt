@@ -22,6 +22,9 @@ def activate():
     for data_type in [set, list, str, dict, tuple, int, float, type(None)]:
         curse(data_type, 'is_none', otb.is_none)
         curse(data_type, 'is_not_none', otb.is_not_none)
+    
+    curse(object, '_s', otb.safe_access)
+    curse(type(None), '_s', otb.safe_none_accessor())
 
 def deactivate():
     for data_type, module in DATA_TYPE_MODULE_MAP.items():
@@ -32,3 +35,6 @@ def deactivate():
     for data_type in [set, list, str, dict, tuple, int, float, type(None)]:
         reverse(data_type, 'is_none')
         reverse(data_type, 'is_not_none')
+    
+    reverse(object, '_s')
+    reverse(type(None), '_s')

@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.2.4'
+VERSION = '0.2.5'
 DESCRIPTION = 'PyToolBelt - Extend your built-in methods.'
 LONG_DESCRIPTION = open('README.md', 'r').read()
 
